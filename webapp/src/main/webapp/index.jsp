@@ -21,5 +21,5 @@
 											        <span class="psw">Forgot <a href="#">password?</a></span>
 												  </div>
 </form>
-ADVERTISEMENT
+
 
