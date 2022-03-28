@@ -8,9 +8,9 @@
 				      <input type="text" placeholder="Enter Username" name="uname" required><br>
 				      <label for="psw"><b>Password field</b></label>					          <input type="password" placeholder="Enter Password" name="psw" required><br>
 
-				      <button type="submit">Login button </button><br>
+				      <button type="submit">Login</button><br>
 						          <label>
-								        <input type="checkbox" checked="checked" name="remember"> Remember me
+					        <input type="checkbox" checked="checked" name="remember"> Remember
 									    </label>
 									      </div>
 
