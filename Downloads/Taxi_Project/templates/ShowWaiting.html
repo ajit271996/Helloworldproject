@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<div ><h1>Simulation in progress...Time left = <span id="timer"></h1></span></div>
+<style>
+div{
+  background-color:#419D78;
+  color:#EFD0CA;
+  font-size:20px;
+  text-align:center;
+}
+</style>
+<script type="text/javascript">
+document.getElementById('timer').innerHTML = 05 + ":" + 00;
+function startTimer() {
+  var presentTime = document.getElementById('timer').innerHTML;
+  var timeArray = presentTime.split(/[:]+/);
+  var m = timeArray[0];
+  var s = checkSecond((timeArray[1] - 1));
+  if(s==59){m=m-1}
+  if(m<0){
+    return  window.location.href = '/publishtaxidatafn';
+  }
+  
+  document.getElementById('timer').innerHTML =
+    m + ":" + s;
+  console.log(m)
+  setTimeout(startTimer, 1000);
+  
+}
+
+function checkSecond(sec) {
+  if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+  if (sec < 0) {sec = "59"};
+  return sec;
+}
+
+</script>
+</head>
+<body>
+<p id="demo"></p>
+<h3>Taxi Data Simulation:</h3>
+	<div id="loading"></div>
+    <div id="content">
+    <p>
+    <form action="/publishtaxidatafn" method="POST">
+		<input type="submit" id="btndo" name="btnsimulate" value="Start Simulation" onclick="startTimer();">
+    </form>
+    </p>
+    </div>    
+</body>
+</html>

@@ -1,0 +1,39 @@
+###Make sure yum is updated on EC2 instance launch
+sudo yum update -y
+#### Confiure AWS account 
+aws configure
+#### Copy the solution file from locla to S3 bucket and from there copy to Ec2 machine
+aws s3 sync "s3://gp47may2022/AWS upload/" .
+
+#### install mongo DB  ###########################
+sudo vi /etc/yum.repos.d/mongodb-org-5.0.repo
+
+##############
+[mongodb-org-5.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/5.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-5.0.asc
+:wq
+##############
+mongodb+srv://admin:admin@cluster0.pgpb7.mongodb.net/test
+
+sudo yum install -y mongodb-org
+sudo systemctl start mongod
+sudo systemctl status mongod
+######## did it as part from CF template 
+Add port 8080 in Ec2 Secutiyy groups
+ 
+#### Install python module
+sudo pip3 install pymongo
+sudo pip3 install Flask
+sudo pip3 install render_template
+sudo pip3 install json2html
+sudo pip3 install bson
+sudo pip3 install boto3
+sudo pip3 install dnspython
+sudo pip3 install srv
+
+#####Run the script from condole
+python3 main.py  >/dev/null 2>&1 &

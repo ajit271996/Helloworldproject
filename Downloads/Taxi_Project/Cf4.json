@@ -1,0 +1,27 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Resources": {
+		"SNSSubsription": {
+			"Type": "AWS::SNS::Subscription",
+			"Properties": {
+				"Endpoint": "prasannarhegde@gmail.com",
+				"Protocol": "email",
+				"TopicArn": {
+					"Ref": "SNSTopic"
+				}
+			}
+		},
+		"SNSTopic": {
+			"Type": "AWS::SNS::Topic",
+			"Properties": {
+				"Subscription": [
+					{
+						"Endpoint": "prasannarhegde@gmail.com",
+						"Protocol": "email"
+					}
+				],
+				"TopicName": "Taxibooking"
+			}
+		}
+	}
+}

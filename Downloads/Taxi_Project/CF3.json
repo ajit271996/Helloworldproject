@@ -1,0 +1,266 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+        "TestVPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+            "CidrBlock": "10.0.0.0/16",
+            "EnableDnsHostnames" : "true", 
+            "EnableDnsSupport" : "true",
+            "Tags" : [ {"Key" : "Name", "Value" : "TestVPC"} ]
+            }
+        },
+        "Subnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "TestVPC"
+                },
+                "Tags" : [ {"Key" : "Name", "Value" : "Subnet1"} ],
+                "CidrBlock" : "10.0.1.0/24",
+      			"AvailabilityZone" : "us-east-1a",
+      			"MapPublicIpOnLaunch" : "true"
+            }
+        },
+        "Subnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "TestVPC"
+                },
+                "CidrBlock" : "10.0.2.0/24",
+      			"AvailabilityZone" : "us-east-1b",
+      			"MapPublicIpOnLaunch" : "true",
+      			"Tags" : [ {"Key" : "Name", "Value" : "Subnet2"} ]
+            }
+        },
+        "TestSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+            	"SecurityGroupIngress" : [{
+         			"IpProtocol" : "tcp",
+         			"FromPort" : 8080,
+         			"ToPort" : 8080,
+         			"CidrIp" : "0.0.0.0/0"
+      			},
+				{
+         			"IpProtocol" : "tcp",
+         			"FromPort" : 80,
+         			"ToPort" : 80,
+         			"CidrIp" : "0.0.0.0/0"
+      			},
+      			{
+         			"IpProtocol" : "tcp",
+         			"FromPort" : 22,
+         			"ToPort" : 22,
+         			"CidrIp" : "0.0.0.0/0"
+      			}],
+                "VpcId": {
+                    "Ref": "TestVPC"
+                },
+                "GroupDescription": "Allows HTTP and SSH",
+                "Tags" : [ {"Key" : "Name", "Value" : "TestSG"} ]
+            }
+        },
+        "FrontEnd1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+            	"InstanceType" : "t2.micro",
+            	"ImageId" : "ami-048f6ed62451373d9",
+                "KeyName" : "GL_17_Apr",
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "Subnet1"
+                        },
+                        "GroupSet": [{ "Ref" : "TestSG" }],
+                        "DeviceIndex": "0",
+                        "DeleteOnTermination": "true"
+                    }
+                ],
+                "Tags" : [ {"Key" : "Name", "Value" : "FrontEnd1"} ]
+            }
+        },
+        "BackEnd1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+            	"InstanceType" : "t2.micro",
+            	"ImageId" : "ami-048f6ed62451373d9",
+                "KeyName" : "GL_17_Apr",
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "Subnet1"
+                        },
+                        "GroupSet": [{ "Ref" : "TestSG" }],
+                        "DeviceIndex": "0",
+                        "DeleteOnTermination": "true"
+                    }
+                ],
+                "Tags" : [ {"Key" : "Name", "Value" : "BackEnd1"} ]
+            }
+        },
+        "FrontEnd2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+            	"InstanceType" : "t2.micro",
+            	"ImageId" : "ami-03ededff12e34e59e",
+                "KeyName" : "GL_17_Apr",
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "Subnet2"
+                        },
+                        "GroupSet": [{ "Ref" : "TestSG" }],
+                        "DeviceIndex": "0",
+                        "DeleteOnTermination": "true"
+                    }
+                ],
+                "Tags" : [ {"Key" : "Name", "Value" : "FrontEnd2"} ]
+            }
+        },
+        "BackEnd2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+            	"InstanceType" : "t2.micro",
+            	"ImageId" : "ami-03ededff12e34e59e",
+                "KeyName" : "GL_17_Apr",
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "Subnet2"
+                        },
+                        "GroupSet": [{ "Ref" : "TestSG" }],
+                        "DeviceIndex": "0",
+                        "DeleteOnTermination": "true"
+                    }
+                ],
+                "Tags" : [ {"Key" : "Name", "Value" : "BackEnd2"} ]
+            }
+        },
+	    "TestIG": {
+	            "Type": "AWS::EC2::InternetGateway",
+	            "Properties": {
+					"Tags" : [ {"Key" : "Name", "Value" : "TestIG"} ]            
+	            }
+	        },
+        "RouteTable1" : {
+   			"Type" : "AWS::EC2::RouteTable",
+   			"Properties" : {
+      			"VpcId" : { "Ref" : "TestVPC" },
+      			"Tags" : [ {"Key" : "Name", "Value" : "RouteTable1"} ]
+     		}
+   		},
+   		"RouteTable2" : {
+   			"Type" : "AWS::EC2::RouteTable",
+   			"Properties" : {
+      			"VpcId" : { "Ref" : "TestVPC" },
+      			"Tags" : [ {"Key" : "Name", "Value" : "RouteTable2"} ]
+     		}
+   		},
+   		"myRoute1" : {
+   			"Type" : "AWS::EC2::Route",
+   			"Properties" : {
+      			"RouteTableId" : { "Ref" : "RouteTable1" },
+      			"DestinationCidrBlock" : "0.0.0.0/0",
+      			"GatewayId" : { "Ref" : "TestIG" }
+   			}
+		},
+		"myRoute2" : {
+   			"Type" : "AWS::EC2::Route",
+   			"Properties" : {
+      			"RouteTableId" : { "Ref" : "RouteTable2" },
+      			"DestinationCidrBlock" : "0.0.0.0/0",
+      			"GatewayId" : { "Ref" : "TestIG" }
+   			}
+		},
+		"mySubnetRouteTableAssociation1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "Subnet1" },
+            "RouteTableId" : { "Ref" : "RouteTable1" }
+         }
+      },
+        "mySubnetRouteTableAssociation2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "Subnet2" },
+            "RouteTableId" : { "Ref" : "RouteTable2" }
+         }
+      },
+   		"IGAttachment" : {
+  			"Type" : "AWS::EC2::VPCGatewayAttachment",
+  			"Properties" : {
+      		"InternetGatewayId" : { "Ref" : "TestIG"},
+      		"VpcId" : { "Ref" : "TestVPC"}
+    		}
+		},
+	    "ALBTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 300,
+                "UnhealthyThresholdCount": 10,
+                "HealthCheckPath": "/",
+                "Name": "GLCapstoneTargetGroup",
+                "Port": 80,
+                "Protocol": "HTTP",
+                "VpcId": {
+                    "Ref": "TestVPC"
+                },
+                "Targets": [
+                    {
+                        "Id": {
+                            "Ref": "FrontEnd1"
+                        },
+                        "Port": 8080
+                    },
+					{
+                        "Id": {
+                            "Ref": "FrontEnd2"
+                        },
+                        "Port": 8080
+                    }
+					
+					
+                ]
+            }
+        },
+        "ALBListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "ALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "ApplicationLoadBalancer"
+                },
+                "Port": "80",
+                "Protocol": "HTTP"
+            }
+        },
+        "ApplicationLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Scheme": "internet-facing",
+                "Subnets": [
+                    {
+                        "Ref": "Subnet1"
+                    },
+                    {
+                        "Ref": "Subnet2"
+                    }
+                ],
+                "SecurityGroups": [
+                    {
+                        "Ref": "TestSG"
+                    }
+                ]
+            }
+        }
+	}
+}

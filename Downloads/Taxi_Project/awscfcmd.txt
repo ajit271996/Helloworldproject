@@ -1,0 +1,14 @@
+aws cloudformation create-stack --stack-name gp4-gltest-stack --template-body file://CF3.json
+aws cloudformation create-stack --stack-name gp4-gltest-stack-2 --template-body file://CF4.json
+
+
+aws cloudformation delete-stack --stack-name gp4-gltest-stack
+aws cloudformation delete-stack --stack-name gp4-gltest-stack-2
+
+
+--using Load Balancer for High Avaialability
+--using Mongo Db Atlas for UI Maps visualization
+--using API Start and End Time
+--Notification to Taxis and Taxis To accpet the booking from user
+--use data from Trip Start end time  Time and Poisitons for Getting High Demand areas
+
